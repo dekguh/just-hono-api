@@ -1,0 +1,11 @@
+# Cursor Rules for ESLint Auto-fix on Save
+
+# Enable ESLint auto-fix when saving files
+- When saving TypeScript files, automatically run ESLint with --fix flag
+- Apply ESLint rules: single quotes, no semicolons, 2-space indentation
+- Format code according to the eslint.config.js configuration
+
+# File patterns to apply ESLint to
+- Apply to all .ts files in src/ directory
+- Apply to all .js files in the project
+- Exclude node_modules and build directories 

@@ -5,12 +5,18 @@ import tsparser from '@typescript-eslint/parser'
 export default [
   js.configs.recommended,
   {
+    ignores: ['node_modules/', 'dist/', 'build/', '*.min.js']
+  },
+  {
     files: ['**/*.ts'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module'
+      },
+      globals: {
+        console: 'readonly'
       }
     },
     plugins: {
@@ -22,7 +28,8 @@ export default [
       'indent': ['error', 2],
       'comma-dangle': ['error', 'never'],
       'no-trailing-spaces': 'error',
-      'eol-last': 'error'
+      'eol-last': 'error',
+      'no-unused-vars': 'warn'
     }
   }
 ] 
