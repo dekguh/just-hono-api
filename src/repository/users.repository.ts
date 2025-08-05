@@ -24,4 +24,23 @@ export class UsersRepository {
 
     return result[0] ?? null
   }
+
+  async create (user: UsersSchemaZod) : Promise<UsersSchemaZod> {
+    const result = await this.db
+      .insert(usersSchema)
+      .values(user)
+      .returning()
+
+    return result[0]
+  }
+
+  async emailExists (email: string) : Promise<boolean> {
+    const result = await this.db
+      .select()
+      .from(usersSchema)
+      .where(eq(usersSchema.email, email))
+      .limit(1)
+
+    return result.length > 0
+  }
 }
