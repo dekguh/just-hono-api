@@ -3,9 +3,16 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "lint:watch": "eslint . --ext .ts --watch"
+    "lint:watch": "eslint . --ext .ts --watch",
+    "health-check": "curl -f http://localhost:3000/ || exit 1",
+    "docker:dev": "docker-compose up --build",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up --build",
+    "docker:down": "docker-compose down",
+    "docker:clean": "docker-compose down -v --remove-orphans"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.2",

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # Hono API Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+    networks:
+      - hono-network
+    restart: unless-stopped
+
+networks:
+  hono-network:
+    driver: bridge 
