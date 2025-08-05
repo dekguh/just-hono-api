@@ -17,7 +17,9 @@ export default [
         sourceType: 'module'
       },
       globals: {
-        console: 'readonly'
+        console: 'readonly',
+        Bun: 'readonly',
+        process: 'readonly'
       }
     },
     plugins: {
