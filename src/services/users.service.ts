@@ -5,7 +5,6 @@ import { UsersRepository } from '../repository/users.repository'
 import { HTTPException } from 'hono/http-exception'
 
 export class UsersService {
-  // Example: Password123!
   private readonly passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
   constructor (
