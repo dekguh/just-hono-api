@@ -37,14 +37,14 @@ usersRoute.post('/login', zValidator('json', loginSchema), async (c) => {
   const { email, password } = c.req.valid('json')
   const user = await usersService.login(email, password)
 
-  return c.json(user)
+  return c.json(globalResponse(200, 'login successful', user), 200)
 })
 
 usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {
   const userData = c.req.valid('json')
   const user = await usersService.register(userData)
 
-  return c.json(user)
+  return c.json(globalResponse(200, 'user created successfully', user), 200)
 })
 
 export { usersRoute }

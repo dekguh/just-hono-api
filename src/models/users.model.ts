@@ -20,5 +20,5 @@ export const usersSchema = pgTable('users', {
   password: varchar('password', { length: 255 }).notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  isActive: boolean('is_active').notNull().default(false)
+  isActive: boolean('is_active').notNull().default(true)
 })

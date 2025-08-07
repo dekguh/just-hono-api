@@ -88,7 +88,7 @@ export class UsersService {
     }
 
     const token = await sign({
-      id: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + 60 * 5
+      id: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + 60 * 5 // 5 minutes
     }, env.JWT_SECRET)
     const { password: _, ...userWithoutPassword } = user
 
