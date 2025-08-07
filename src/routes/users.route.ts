@@ -5,6 +5,7 @@ import { db } from '../config/postgres'
 import { ZodError, z } from 'zod'
 import { HTTPException } from 'hono/http-exception'
 import { zValidator } from '../middleware/zValidator.middleware'
+import { globalResponse } from '../utils/response'
 
 const usersRoute = new Hono()
 const usersService = new UsersService(new UsersRepository(db))
@@ -13,12 +14,12 @@ usersRoute.onError((error, c) => {
   if (error instanceof HTTPException) {
     if (error.cause instanceof ZodError) {
       const err = error.cause as ZodError
-      return c.json({ message: err.issues[0].message }, 400)
+      return c.json(globalResponse(400, err.issues[0].message), 400)
     }
-    return c.json({ message: error.message }, error.status)
+    return c.json(globalResponse(error.status, error.message), error.status)
   }
 
-  return c.json({ message: 'internal server error', error: error }, 500)
+  return c.json(globalResponse(500, 'internal server error', error), 500)
 })
 
 const loginSchema = z.object({
