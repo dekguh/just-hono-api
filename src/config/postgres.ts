@@ -1,9 +1,10 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from '../models'
+import env from './env'
 
 // Use local Supabase Docker database
-const connectionString = Bun.env.DATABASE_URL as string
+const connectionString = env.DATABASE_URL
 
 console.log('Database connection string:', connectionString)
 const client = postgres(connectionString)
