@@ -22,8 +22,8 @@ usersRoute.onError((error, c) => {
 })
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'email is required').regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, { message: 'invalid email format' }),
-  password: z.string().min(8, 'password must be at least 8 characters long')
+  email: z.string({ message: 'email is required' }).min(1, 'email is required').regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, { message: 'invalid email format' }),
+  password: z.string({ message: 'password is required' }).min(8, 'password must be at least 8 characters long')
 })
 
 usersRoute.post('/login', zValidator('json', loginSchema), async (c) => {
