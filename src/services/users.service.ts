@@ -3,8 +3,8 @@ import { supabaseAdmin } from '../config/supabase'
 import { UsersSchemaZod } from '../models/users.model'
 import { UsersRepository } from '../repository/users.repository'
 import { HTTPException } from 'hono/http-exception'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import { sign } from 'hono/jwt'
+import env from '../config/env'
 
 export class UsersService {
   private readonly passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
@@ -34,7 +34,10 @@ export class UsersService {
       })
     }
 
-    const hashedPassword = await Bun.password.hash(userData.password)
+    const hashedPassword = await Bun.password.hash(userData.password, {
+      algorithm: 'bcrypt',
+      cost: 4
+    })
 
     const userCreated = await this.usersRepository.create({
       ...userData,
@@ -78,13 +81,15 @@ export class UsersService {
       throw new HTTPException(401, { message: 'user is not active, please verify your email' })
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = await Bun.password.verify(password, user.password)
 
     if (!isPasswordValid) {
       throw new HTTPException(401, { message: 'invalid email or password' })
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
+    const token = await sign({
+      id: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + 60 * 5
+    }, env.JWT_SECRET)
     const { password: _, ...userWithoutPassword } = user
 
     return {
