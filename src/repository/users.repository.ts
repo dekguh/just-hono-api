@@ -25,7 +25,7 @@ export class UsersRepository {
     return result[0] ?? null
   }
 
-  async create (user: UsersSchemaZod) : Promise<UsersSchemaZod> {
+  async create (user: Pick<UsersSchemaZod, 'email' | 'password' | 'name'>) : Promise<UsersSchemaZod> {
     const result = await this.db
       .insert(usersSchema)
       .values(user)

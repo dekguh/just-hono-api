@@ -13,7 +13,7 @@ export class UsersService {
     private usersRepository: UsersRepository
   ) {}
 
-  async register (userData: UsersSchemaZod) {
+  async register (userData: Pick<UsersSchemaZod, 'email' | 'password' | 'name'>) {
     const isEmailExists = await this.usersRepository.emailExists(userData.email)
 
     if (isEmailExists) {
