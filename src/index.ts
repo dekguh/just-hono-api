@@ -24,7 +24,8 @@ app.use('*', cors({
   origin: env.ALLOWED_ORIGINS,
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  exposeHeaders: ['Content-Type', 'Authorization']
+  exposeHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 600
 }))
 app.route('/users', usersRoute)
 
