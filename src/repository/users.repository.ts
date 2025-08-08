@@ -25,10 +25,14 @@ export class UsersRepository {
     return result[0] ?? null
   }
 
-  async create (user: Pick<UsersSchemaZod, 'email' | 'password' | 'name'>) : Promise<UsersSchemaZod> {
+  async create (user: Pick<UsersSchemaZod, 'email' | 'password' | 'name' | 'isActive'>) : Promise<UsersSchemaZod> {
+    const userData = {
+      ...user,
+      isActive: false
+    }
     const result = await this.db
       .insert(usersSchema)
-      .values(user)
+      .values(userData)
       .returning()
 
     return result[0]
