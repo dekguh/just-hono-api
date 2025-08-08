@@ -44,7 +44,7 @@ usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {
   const userData = c.req.valid('json')
   const user = await usersService.register(userData)
 
-  return c.json(globalResponse(200, 'user created successfully', user), 200)
+  return c.json(globalResponse(201, 'user created successfully', user), 201)
 })
 
 export { usersRoute }
