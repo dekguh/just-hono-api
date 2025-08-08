@@ -33,16 +33,13 @@ const registerSchema = z.object({
   name: z.string({ message: 'name is required' }).min(1, 'name is required')
 })
 
-usersRoute.post('/login', zValidator('json', loginSchema), async (c) => {
-  const { email, password } = c.req.valid('json')
-  const user = await usersService.login(email, password)
+usersRoute.get('/sign-in', zValidator('json', loginSchema), async (c) => {
 
-  return c.json(globalResponse(200, 'login successful', user), 200)
 })
 
 usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {
   const userData = c.req.valid('json')
-  const user = await usersService.register(userData)
+  const user = await usersService.signUp(userData)
 
   return c.json(globalResponse(201, 'user created successfully', user), 201)
 })
