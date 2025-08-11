@@ -2,10 +2,11 @@ import { Hono } from 'hono'
 import { UsersService } from '../services/users.service'
 import { UsersRepository } from '../repository/users.repository'
 import { db } from '../config/postgres'
-import { ZodError, z } from 'zod'
+import { ZodError } from 'zod'
 import { HTTPException } from 'hono/http-exception'
 import { zValidator } from '../middleware/zValidator.middleware'
 import { globalResponse } from '../utils/response'
+import { loginSchema, registerSchema } from '../models'
 
 const usersRoute = new Hono()
 const usersService = new UsersService(new UsersRepository(db))
@@ -22,19 +23,11 @@ usersRoute.onError((error, c) => {
   return c.json(globalResponse(500, 'internal server error', error), 500)
 })
 
-const loginSchema = z.object({
-  email: z.string({ message: 'email is required' }).min(1, 'email is required').regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, { message: 'invalid email format' }),
-  password: z.string({ message: 'password is required' }).min(8, 'password must be at least 8 characters long')
-})
+usersRoute.post('/login', zValidator('json', loginSchema), async (c) => {
+  const userData = c.req.valid('json')
+  const user = await usersService.signIn(userData)
 
-const registerSchema = z.object({
-  email: z.string({ message: 'email is required' }).min(1, 'email is required').regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, { message: 'invalid email format' }),
-  password: z.string({ message: 'password is required' }).min(8, 'password must be at least 8 characters long'),
-  name: z.string({ message: 'name is required' }).min(1, 'name is required')
-})
-
-usersRoute.get('/sign-in', zValidator('json', loginSchema), async (c) => {
-
+  return c.json(globalResponse(200, 'user signed in successfully', user), 200)
 })
 
 usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {

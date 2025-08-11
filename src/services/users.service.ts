@@ -1,6 +1,6 @@
 
 import { supabase } from '../config/supabase'
-import { UsersSchemaZod } from '../models/users.model'
+import { LoginSchema, UsersSchemaZod } from '../models/users.model'
 import { UsersRepository } from '../repository/users.repository'
 import { HTTPException } from 'hono/http-exception'
 
@@ -10,6 +10,28 @@ export class UsersService {
   constructor (
     private usersRepository: UsersRepository
   ) {}
+
+  async signIn (userData: LoginSchema) {
+    try {
+      const responseSignIn = await supabase.auth.signInWithPassword({
+        email: userData.email,
+        password: userData.password
+      })
+
+      return {
+        id: responseSignIn.data.user?.id,
+        email: responseSignIn.data.user?.email,
+        name: responseSignIn.data.user?.user_metadata.name,
+        createdAt: responseSignIn.data.user?.created_at,
+        updatedAt: responseSignIn.data.user?.updated_at,
+        token: responseSignIn.data.session?.access_token
+      }
+    } catch (error: unknown) {
+      if (error instanceof HTTPException) {
+        throw new HTTPException(error.status, { message: error.message })
+      }
+    }
+  }
 
   async signUp (userData: Pick<UsersSchemaZod, 'email' | 'name'> & { password: string }) {
     try {
