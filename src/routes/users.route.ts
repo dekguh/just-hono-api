@@ -24,10 +24,18 @@ usersRoute.onError((error, c) => {
 })
 
 usersRoute.post('/login', zValidator('json', loginSchema), async (c) => {
-  const userData = c.req.valid('json')
-  const user = await usersService.signIn(userData)
+  try {
+    const userData = c.req.valid('json')
+    const user = await usersService.signIn(userData)
 
-  return c.json(globalResponse(200, 'user signed in successfully', user), 200)
+    return c.json(globalResponse(200, 'user signed in successfully', user), 200)
+  } catch (error) {
+    if (error instanceof HTTPException) {
+      return c.json(globalResponse(error.status, error.message), error.status)
+    }
+
+    return c.json(globalResponse(500, 'internal server error'), 500)
+  }
 })
 
 usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {

@@ -18,6 +18,10 @@ export class UsersService {
         password: userData.password
       })
 
+      if (responseSignIn.error instanceof Error) {
+        throw new HTTPException(400, { message: responseSignIn.error.message })
+      }
+
       return {
         id: responseSignIn.data.user?.id,
         email: responseSignIn.data.user?.email,
@@ -30,6 +34,8 @@ export class UsersService {
       if (error instanceof HTTPException) {
         throw new HTTPException(error.status, { message: error.message })
       }
+
+      throw new HTTPException(500, { message: 'Internal server error' })
     }
   }
 
@@ -44,6 +50,11 @@ export class UsersService {
         email: userData.email,
         password: userData.password
       })
+
+      if (responseSignUp.error instanceof Error) {
+        throw new HTTPException(400, { message: responseSignUp.error.message })
+      }
+
       const responseAddDetail = await this.usersRepository.addDetail({
         email: userData.email,
         name: userData.name,
