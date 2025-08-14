@@ -58,7 +58,7 @@ export class UsersService {
       const responseAddDetail = await this.usersRepository.addDetail({
         email: userData.email,
         name: userData.name,
-        userId: responseSignUp?.data.user?.id || ''
+        id: responseSignUp?.data.user?.id || ''
       })
 
       return responseAddDetail
