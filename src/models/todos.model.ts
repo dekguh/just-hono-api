@@ -1,6 +1,25 @@
 import { pgTable, serial, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { usersSchema } from './users.model'
 import { relations } from 'drizzle-orm'
+import { z } from 'zod'
+
+export const todosSchemaZod = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  userId: z.string()
+})
+
+export const createTodoZod = z.object({
+  title: z.string(),
+  description: z.string(),
+  userId: z.string()
+})
+
+export type TodosSchemaZod = z.infer<typeof todosSchemaZod>
+export type CreateTodoZod = z.infer<typeof createTodoZod>
 
 export const todosSchema = pgTable('todos', {
   id: serial('id').primaryKey(),
