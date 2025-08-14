@@ -19,6 +19,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-validator": "^0.7.2",
     "@supabase/supabase-js": "^2.53.0",
     "bcryptjs": "^3.0.2",
@@ -27,9 +28,11 @@
     "drizzle-orm": "^0.44.4",
     "hc": "^0.1.7",
     "hono": "^4.8.12",
+    "hono-openapi": "^0.4.8",
     "jsonwebtoken": "^9.0.2",
     "postgres": "^3.4.7",
-    "zod": "^4.0.14"
+    "zod": "^4.0.14",
+    "zod-openapi": "^5.3.1"
   },
   "devDependencies": {
     "@types/bun": "latest",

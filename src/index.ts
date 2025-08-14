@@ -4,6 +4,8 @@ import { sql } from 'drizzle-orm'
 import { db } from './config/postgres'
 import { cors } from 'hono/cors'
 import env from './config/env'
+import { openAPISpecs } from 'hono-openapi'
+import { swaggerUI } from '@hono/swagger-ui'
 
 const app = new Hono()
 
@@ -28,5 +30,25 @@ app.use('*', cors({
   maxAge: 600
 }))
 app.route('/users', usersRoute)
+
+app.get('/open-api', openAPISpecs(app, {
+  documentation: {
+    info: {
+      title: 'Todo API',
+      version: '1.0.0'
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000'
+      }
+    ]
+  }
+}))
+
+app.get('/swagger', swaggerUI({
+  url: '/open-api',
+  title: 'Just Hono API'
+}))
+
 
 export default app
