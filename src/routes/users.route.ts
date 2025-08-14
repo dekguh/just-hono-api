@@ -7,6 +7,8 @@ import { HTTPException } from 'hono/http-exception'
 import { zValidator } from '../middleware/zValidator.middleware'
 import { globalResponse } from '../utils/response'
 import { loginSchema, registerSchema } from '../models'
+import jwt, { JsonWebTokenError } from 'jsonwebtoken'
+import { authMiddleware } from '../middleware/auth.middleware'
 
 const usersRoute = new Hono()
 const usersService = new UsersService(new UsersRepository(db))
@@ -18,6 +20,10 @@ usersRoute.onError((error, c) => {
       return c.json(globalResponse(400, err.issues[0].message), 400)
     }
     return c.json(globalResponse(error.status, error.message), error.status)
+  }
+
+  if (error instanceof JsonWebTokenError) {
+    return c.json(globalResponse(401, 'unauthorized'), 401)
   }
 
   return c.json(globalResponse(500, 'internal server error', error), 500)
@@ -43,6 +49,14 @@ usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {
   const user = await usersService.signUp(userData)
 
   return c.json(globalResponse(201, 'user created successfully', user), 201)
+})
+
+usersRoute.get('/me', authMiddleware, async (c) => {
+  const token = c.req.header('Authorization')?.split(' ')[1]
+  const decodedJwt = token ? jwt.decode(token) : null
+
+  const user = await usersService.getUserMe(decodedJwt?.sub as string)
+  return c.json(globalResponse(200, 'user fetched successfully', user), 200)
 })
 
 export { usersRoute }

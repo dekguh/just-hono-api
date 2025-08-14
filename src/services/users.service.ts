@@ -68,4 +68,18 @@ export class UsersService {
       }
     }
   }
+
+  async getUserMe (userId : string) {
+    try {
+      const user = await this.usersRepository.findById(userId)
+
+      return user
+    } catch (error: unknown) {
+      if (error instanceof HTTPException) {
+        throw new HTTPException(error.status, { message: error.message })
+      }
+
+      throw new HTTPException(500, { message: 'Internal server error' })
+    }
+  }
 }
