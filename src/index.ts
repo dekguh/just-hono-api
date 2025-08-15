@@ -1,13 +1,13 @@
-import { Hono } from 'hono'
-import { usersRoute } from './routes/users.route'
 import { sql } from 'drizzle-orm'
 import { db } from './config/postgres'
 import { cors } from 'hono/cors'
 import env from './config/env'
-import { openAPISpecs } from 'hono-openapi'
 import { swaggerUI } from '@hono/swagger-ui'
+import { openApiDocs } from './config/open-api'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { usersRoute } from './routes/users.route'
 
-const app = new Hono()
+const app = new OpenAPIHono()
 
 // Test database connection on startup
 async function testDbConnection() {
@@ -29,26 +29,13 @@ app.use('*', cors({
   exposeHeaders: ['Content-Type', 'Authorization'],
   maxAge: 600
 }))
+
 app.route('/users', usersRoute)
 
-app.get('/open-api', openAPISpecs(app, {
-  documentation: {
-    info: {
-      title: 'Todo API',
-      version: '1.0.0'
-    },
-    servers: [
-      {
-        url: 'http://localhost:3000'
-      }
-    ]
-  }
-}))
-
+app.doc('/docs/open-api', openApiDocs)
 app.get('/swagger', swaggerUI({
-  url: '/open-api',
+  url: '/docs/open-api',
   title: 'Just Hono API'
 }))
-
 
 export default app

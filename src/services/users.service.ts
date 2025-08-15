@@ -1,8 +1,9 @@
 
 import { supabase } from '../config/supabase'
-import { LoginSchema, UsersSchemaZod } from '../models/users.model'
+import { TUsersSchema } from '../models/users.model'
 import { UsersRepository } from '../repository/users.repository'
 import { HTTPException } from 'hono/http-exception'
+import { TLoginParamsSchema } from '../types/users.types'
 
 export class UsersService {
   private readonly passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
@@ -11,7 +12,7 @@ export class UsersService {
     private usersRepository: UsersRepository
   ) {}
 
-  async signIn (userData: LoginSchema) {
+  async signIn (userData: TLoginParamsSchema) {
     try {
       const responseSignIn = await supabase.auth.signInWithPassword({
         email: userData.email,
@@ -39,7 +40,7 @@ export class UsersService {
     }
   }
 
-  async signUp (userData: Pick<UsersSchemaZod, 'email' | 'name'> & { password: string }) {
+  async signUp (userData: Pick<TUsersSchema, 'email' | 'name'> & { password: string }) {
     try {
       const isExist = await this.usersRepository.findByEmail(userData.email)
       if (isExist) {

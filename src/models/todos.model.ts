@@ -1,7 +1,7 @@
 import { pgTable, serial, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { usersSchema } from './users.model'
 import { relations } from 'drizzle-orm'
-import { z } from 'zod'
+import { z } from '@hono/zod-openapi'
 
 export const todosSchemaZod = z.object({
   id: z.string(),

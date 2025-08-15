@@ -1,62 +1,18 @@
-import { Hono } from 'hono'
 import { UsersService } from '../services/users.service'
 import { UsersRepository } from '../repository/users.repository'
 import { db } from '../config/postgres'
-import { ZodError } from 'zod'
-import { HTTPException } from 'hono/http-exception'
-import { zValidator } from '../middleware/zValidator.middleware'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { loginDocs } from '../docs/users.docs'
 import { globalResponse } from '../utils/response'
-import { loginSchema, registerSchema } from '../models'
-import jwt, { JsonWebTokenError } from 'jsonwebtoken'
-import { authMiddleware } from '../middleware/auth.middleware'
 
-const usersRoute = new Hono()
+const usersRoute = new OpenAPIHono()
 const usersService = new UsersService(new UsersRepository(db))
 
-usersRoute.onError((error, c) => {
-  if (error instanceof HTTPException) {
-    if (error.cause instanceof ZodError) {
-      const err = error.cause as ZodError
-      return c.json(globalResponse(400, err.issues[0].message), 400)
-    }
-    return c.json(globalResponse(error.status, error.message), error.status)
-  }
-
-  if (error instanceof JsonWebTokenError) {
-    return c.json(globalResponse(401, 'unauthorized'), 401)
-  }
-
-  return c.json(globalResponse(500, 'internal server error', error), 500)
-})
-
-usersRoute.post('/login', zValidator('json', loginSchema), async (c) => {
-  try {
-    const userData = c.req.valid('json')
-    const user = await usersService.signIn(userData)
-
-    return c.json(globalResponse(200, 'user signed in successfully', user), 200)
-  } catch (error) {
-    if (error instanceof HTTPException) {
-      return c.json(globalResponse(error.status, error.message), error.status)
-    }
-
-    return c.json(globalResponse(500, 'internal server error'), 500)
-  }
-})
-
-usersRoute.post('/register', zValidator('json', registerSchema), async (c) => {
+usersRoute.openapi(loginDocs, async (c) => {
   const userData = c.req.valid('json')
-  const user = await usersService.signUp(userData)
+  const user = await usersService.signIn(userData)
 
-  return c.json(globalResponse(201, 'user created successfully', user), 201)
-})
-
-usersRoute.get('/me', authMiddleware, async (c) => {
-  const token = c.req.header('Authorization')?.split(' ')[1]
-  const decodedJwt = token ? jwt.decode(token) : null
-
-  const user = await usersService.getUserMe(decodedJwt?.sub as string)
-  return c.json(globalResponse(200, 'user fetched successfully', user), 200)
+  return c.json(globalResponse(200, 'User signed in successfully', user))
 })
 
 export { usersRoute }
