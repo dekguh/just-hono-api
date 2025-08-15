@@ -12,7 +12,12 @@ usersRoute.openapi(loginDocs, async (c) => {
   const userData = c.req.valid('json')
   const user = await usersService.signIn(userData)
 
-  return c.json(globalResponse(200, 'User signed in successfully', user))
+  return c.json(globalResponse(200, 'User signed in successfully', {
+    id: user?.id || '',
+    email: user?.email || '',
+    name: user?.name || '',
+    token: user?.token || ''
+  }))
 })
 
 export { usersRoute }
