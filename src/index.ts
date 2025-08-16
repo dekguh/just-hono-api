@@ -8,7 +8,6 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { usersRoute } from './routes/users.route'
 import { globalResponse } from './utils/response'
 import { HTTPException } from 'hono/http-exception'
-import { ZodError } from 'zod'
 
 const app = new OpenAPIHono()
 
@@ -35,16 +34,7 @@ app.use('*', cors({
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
-    console.error(err)
-    return c.json(globalResponse(err.status, err.message, {
-      message: err.message
-    }), err.status)
-  }
-
-  if (err instanceof ZodError) {
-    return c.json(globalResponse(400, 'Bad Request', {
-      message: err.message
-    }), 400)
+    return c.json(globalResponse(err.status, err.message, null), err.status)
   }
 
   return c.json(globalResponse(500, 'Internal server error', {
