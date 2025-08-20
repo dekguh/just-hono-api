@@ -2,9 +2,11 @@ import { UsersService } from '../services/users.service'
 import { UsersRepository } from '../repository/users.repository'
 import { db } from '../config/postgres'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { loginDocs, registerDocs } from '../docs/users.docs'
+import { loginDocs, registerDocs, userMeDocs } from '../docs/users.docs'
 import { globalResponse } from '../utils/response'
 import { ZodError } from 'zod'
+import jwt from 'jsonwebtoken'
+import { authMiddleware } from '../middleware/auth.middleware'
 
 const usersRoute = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -37,5 +39,20 @@ usersRoute.openapi(registerDocs, async (c) => {
     name: user?.name || ''
   }))
 })
+
+usersRoute.use('/me', authMiddleware)
+usersRoute.openapi(userMeDocs, async (c) => {
+  const token = c.req.header('Authorization')?.replace('Bearer ', '')
+  const userData = jwt.decode(token || '') as { user_metadata: { sub: string } }
+
+  const user = await usersService.getUserMe(userData?.user_metadata?.sub)
+
+  return c.json(globalResponse(200, 'Success get detail user', {
+    id: user?.id || '',
+    email: user?.email || '',
+    name: user?.name || ''
+  }))
+})
+
 
 export { usersRoute }

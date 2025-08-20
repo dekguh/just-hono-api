@@ -1,5 +1,5 @@
 import { createRoute } from '@hono/zod-openapi'
-import { LoginParamsSchema, RegisterParamsSchema, ReturnLoginSchema, ReturnRegisterSchema } from '../types/users.types'
+import { LoginParamsSchema, RegisterParamsSchema, ReturnLoginSchema, ReturnRegisterSchema, ReturnUserMeSchema } from '../types/users.types'
 import { getResponseSchema } from '../utils/response'
 
 export const loginDocs = createRoute({
@@ -46,6 +46,22 @@ export const registerDocs = createRoute({
       content: {
         'application/json': {
           schema: getResponseSchema(200, ReturnRegisterSchema)
+        }
+      }
+    }
+  }
+})
+
+export const userMeDocs = createRoute({
+  method: 'get',
+  path: '/me',
+  tags: ['Users'],
+  responses: {
+    200: {
+      description: 'Get detail user me',
+      content: {
+        'application/json': {
+          schema: getResponseSchema(200, ReturnUserMeSchema)
         }
       }
     }

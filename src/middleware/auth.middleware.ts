@@ -7,6 +7,12 @@ export const authMiddleware = bearerAuth({
     return Boolean(decoded)
   },
   invalidTokenMessage: () => {
-    return 'invalii'
+    return 'Unauthorized'
+  },
+  invalidAuthenticationHeaderMessage: () => {
+    return 'Unauthorized'
+  },
+  noAuthenticationHeaderMessage: () => {
+    return 'Unauthorized'
   }
 })

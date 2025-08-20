@@ -31,3 +31,11 @@ export const RegisterParamsSchema = z.object({
 })
 
 export type TRegisterParamsSchema = z.infer<typeof RegisterParamsSchema>
+
+export const ReturnUserMeSchema = z.object({
+  id: z.string().optional(),
+  email: z.string().optional(),
+  name: z.string().optional()
+})
+
+export type TReturnUserMeSchema = z.infer<typeof ReturnUserMeSchema>
