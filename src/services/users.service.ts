@@ -4,6 +4,7 @@ import { TUsersSchema } from '../models/users.model'
 import { UsersRepository } from '../repository/users.repository'
 import { HTTPException } from 'hono/http-exception'
 import { TLoginParamsSchema } from '../types/users.types'
+import { AuthError } from '@supabase/supabase-js'
 
 export class UsersService {
   private readonly passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
@@ -81,6 +82,24 @@ export class UsersService {
       }
 
       throw new HTTPException(500, { message: 'Internal server error' })
+    }
+  }
+
+  async signOut () {
+    try {
+      const responseSignOut = await supabase.auth.signOut({
+        scope: 'global'
+      })
+
+      if (responseSignOut.error instanceof AuthError) {
+        throw new HTTPException(400, { message: responseSignOut.error.message })
+      }
+
+      return responseSignOut
+    } catch (error: unknown) {
+      if (error instanceof HTTPException) {
+        throw new HTTPException(error.status, { message: error.message })
+      }
     }
   }
 }

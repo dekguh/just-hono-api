@@ -8,6 +8,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { usersRoute } from './routes/users.route'
 import { globalResponse } from './utils/response'
 import { HTTPException } from 'hono/http-exception'
+import { TokenExpiredError } from 'jsonwebtoken'
 
 const app = new OpenAPIHono()
 
@@ -35,6 +36,10 @@ app.use('*', cors({
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
     return c.json(globalResponse(err.status, err.message, null), err.status)
+  }
+
+  if (err instanceof TokenExpiredError) {
+    return c.json(globalResponse(401, 'Token expired', null), 401)
   }
 
   return c.json(globalResponse(500, 'Internal server error', {

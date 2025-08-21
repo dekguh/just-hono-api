@@ -1,4 +1,4 @@
-import { createRoute } from '@hono/zod-openapi'
+import { createRoute, z } from '@hono/zod-openapi'
 import { LoginParamsSchema, RegisterParamsSchema, ReturnLoginSchema, ReturnRegisterSchema, ReturnUserMeSchema } from '../types/users.types'
 import { getResponseSchema } from '../utils/response'
 
@@ -62,6 +62,22 @@ export const userMeDocs = createRoute({
       content: {
         'application/json': {
           schema: getResponseSchema(200, ReturnUserMeSchema)
+        }
+      }
+    }
+  }
+})
+
+export const logoutDocs = createRoute({
+  method: 'post',
+  path: '/logout',
+  tags: ['Authentication'],
+  responses: {
+    200: {
+      description: 'When the user signs out, Supabase revokes the refresh token and deletes the JWT from the client-side',
+      content: {
+        'application/json': {
+          schema: getResponseSchema(200, z.object({}))
         }
       }
     }

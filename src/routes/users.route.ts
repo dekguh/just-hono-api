@@ -2,7 +2,7 @@ import { UsersService } from '../services/users.service'
 import { UsersRepository } from '../repository/users.repository'
 import { db } from '../config/postgres'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { loginDocs, registerDocs, userMeDocs } from '../docs/users.docs'
+import { loginDocs, logoutDocs, registerDocs, userMeDocs } from '../docs/users.docs'
 import { globalResponse } from '../utils/response'
 import { ZodError } from 'zod'
 import jwt from 'jsonwebtoken'
@@ -54,5 +54,11 @@ usersRoute.openapi(userMeDocs, async (c) => {
   }))
 })
 
+usersRoute.use('/logout', authMiddleware)
+usersRoute.openapi(logoutDocs, async (c) => {
+  await usersService.signOut()
+
+  return c.json(globalResponse(200, 'User logged out successfully', {}))
+})
 
 export { usersRoute }
